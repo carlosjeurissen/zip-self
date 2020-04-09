@@ -8,8 +8,15 @@ const archiver = require('archiver');
 function generate (params) {
   const version = process.env.npm_package_version;
   const outputPath = params.outputPath.replace('{version}', version);
+  const globs = ['**'];
+  const excludeGlobs = params.excludeGlobs;
+  if (Array.isArray(excludeGlobs)) {
+    excludeGlobs.forEach(function (item) {
+      globs.push('!' + item);
+    });
+  }
 
-  globby('**', {
+  globby(globs, {
     gitignore: true
   }).then(function (globs) {
     const outputStream = fs.createWriteStream(outputPath);
@@ -29,8 +36,9 @@ function generate (params) {
   });
 }
 
-const argList = process.argv.join('=').split('=');
-if (argList.length > 2) {
+var usedAsCli = process.argv[1].endsWith('/zip-path');
+if (usedAsCli) {
+  const argList = process.argv.join('=').split('=');
   let outputPath = null;
   argList.forEach((item, index) => {
     if (item === '--output' || item === '-o') {
