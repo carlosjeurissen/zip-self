@@ -5,28 +5,27 @@ const fs = require('fs');
 const globby = require('globby');
 const archiver = require('archiver');
 
-function generate (params) {
-  const version = process.env.npm_package_version;
-  const outputPath = params.outputPath.replace('{version}', version);
+function getGlobsToInclude (excludeGlobs) {
   const globs = ['**'];
-  const excludeGlobs = params.excludeGlobs;
   if (Array.isArray(excludeGlobs)) {
     excludeGlobs.forEach(function (item) {
       globs.push('!' + item);
     });
   }
 
-  globby(globs, {
+  return globby(globs, {
     gitignore: true
-  }).then(function (globs) {
+  });
+}
+
+function writeToArchive (outputPath, globs) {
+  return new Promise(function (resolve, reject) {
     const outputStream = fs.createWriteStream(outputPath);
 
-    outputStream.on('close', function () {
-      console.log(outputPath + ' is ready.');
-    });
+    outputStream.on('close', resolve);
 
     const archive = archiver('zip');
-    archive.on('error', console.error);
+    archive.on('error', reject);
     archive.pipe(outputStream);
 
     globs.forEach(function (glob) {
@@ -34,6 +33,18 @@ function generate (params) {
     });
     archive.finalize();
   });
+}
+
+function generate (params) {
+  const version = process.env.npm_package_version;
+  const outputPath = params.outputPath.replace('{version}', version);
+  const excludeGlobs = params.excludeGlobs;
+
+  return getGlobsToInclude(excludeGlobs).then(function (globs) {
+    return writeToArchive(outputPath, globs);
+  }).then(function () {
+    console.log(outputPath + ' is ready.');
+  }, console.error);
 }
 
 const usedAsCli = process.argv[1].endsWith('/zip-self');
