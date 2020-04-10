@@ -36,7 +36,7 @@ function generate (params) {
   });
 }
 
-var usedAsCli = process.argv[1].endsWith('/zip-path');
+var usedAsCli = process.argv[1].endsWith('/zip-self');
 if (usedAsCli) {
   const argList = process.argv.join('=').split('=');
   let outputPath = null;
