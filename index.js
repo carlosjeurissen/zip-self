@@ -5,6 +5,9 @@ const fs = require('fs');
 const globby = require('globby');
 const archiver = require('archiver');
 
+const executionPath = process.argv[1].replace(/\\+/g, '/');
+const usedAsCli = executionPath.endsWith('/zip-self') || executionPath.endsWith('/zip-self/index.js');
+
 function getGlobsToInclude (excludeGlobs) {
   const globs = ['**'];
   if (Array.isArray(excludeGlobs)) {
@@ -47,7 +50,6 @@ function generate (params) {
   }, console.error);
 }
 
-const usedAsCli = process.argv[1].endsWith('/zip-self');
 if (usedAsCli) {
   const argList = process.argv.join('=').split('=');
   let outputPath = null;
