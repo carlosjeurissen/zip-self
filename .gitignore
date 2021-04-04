@@ -15,5 +15,6 @@ node_modules
 *.sublime-project
 
 # Mac and windows files
+__MACOSX
 .DS_Store
 .tmp
