@@ -53,14 +53,18 @@ function generate (params) {
 if (usedAsCli) {
   const argList = process.argv.join('=').split('=');
   let outputPath = null;
+  let excludeGlobs = null;
   argList.forEach((item, index) => {
     if (item === '--output' || item === '-o') {
       outputPath = argList[index + 1];
+    } else if (item === '--exclude-globs') {
+      excludeGlobs = argList[index + 1].split(',');
     }
   });
 
   generate({
-    outputPath: outputPath
+    outputPath: outputPath,
+    excludeGlobs: excludeGlobs
   });
 }
 
