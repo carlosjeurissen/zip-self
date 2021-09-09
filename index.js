@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-const fs = require('fs');
-const globby = require('globby');
+import { createWriteStream } from 'fs';
+import { globby } from 'globby';
 const archiver = require('archiver');
 
 const executionPath = process.argv[1].replace(/\\+/g, '/');
@@ -23,7 +23,7 @@ function getGlobsToInclude (excludeGlobs) {
 
 function writeToArchive (outputPath, globs) {
   return new Promise(function (resolve, reject) {
-    const outputStream = fs.createWriteStream(outputPath);
+    const outputStream = createWriteStream(outputPath);
 
     outputStream.on('close', resolve);
 
