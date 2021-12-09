@@ -38,8 +38,24 @@ function writeToArchive (outputPath, globs) {
   });
 }
 
-function generate (params) {
+function readJsonFile (filePath) {
+  try {
+    const fileText = fs.readFileSync(filePath);
+    return JSON.parse(fileText);
+  } catch (e) {
+    console.log('Couldn\'t read json file: ' + e);
+  }
+}
+
+function getVersion () {
   const version = process.env.npm_package_version;
+  if (version) return version;
+  const packageJson = readJsonFile('./package.json') || {};
+  return packageJson.version || 'unknown';
+}
+
+function generate (params) {
+  const version = getVersion();
   const outputPath = params.outputPath.replace('{version}', version);
   const excludeGlobs = params.excludeGlobs;
 
