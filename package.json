@@ -1,6 +1,6 @@
 {
   "name": "zip-self",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Simple package which zips the current working directory while ignoring files in gitignore",
   "keywords": [
     "zip",
@@ -22,7 +22,7 @@
     "zip-self": "./index.js"
   },
   "dependencies": {
-    "archiver": "~5.3.0",
+    "archiver": "~5.3.1",
     "globby": "~11.0.4"
   },
   "devDependencies": {
