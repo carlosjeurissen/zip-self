@@ -1,13 +1,6 @@
-#!/usr/bin/env node
-
-'use strict';
-
-const fs = require('fs');
-const globby = require('globby');
-const archiver = require('archiver');
-
-const executionPath = process.argv[1].replace(/\\+/g, '/');
-const usedAsCli = executionPath.endsWith('/zip-self') || executionPath.endsWith('/zip-self/index.js');
+import fs from 'node:fs';
+import globby from 'globby';
+import archiver from 'archiver';
 
 function getGlobsToInclude (excludeGlobs) {
   const globs = ['**'];
@@ -45,43 +38,22 @@ function readJsonFile (filePath) {
     return JSON.parse(fileText);
   } catch (e) {
     console.log('Couldn\'t read json file: ' + e);
+    return {};
   }
 }
 
 function getVersion () {
   const version = process.env.npm_package_version;
   if (version) return version;
-  const packageJson = readJsonFile('./package.json') || {};
+  const packageJson = readJsonFile('./package.json');
   return packageJson.version || 'unknown';
 }
 
-function generate (params) {
+export default function generate (params) {
   const version = getVersion();
   const outputPath = params.outputPath.replace('{version}', version);
   const excludeGlobs = params.excludeGlobs;
 
-  return getGlobsToInclude(excludeGlobs).then((globs) => writeToArchive(outputPath, globs)).then(() => {
-    console.log(outputPath + ' is ready.');
-  }, console.error);
+  return getGlobsToInclude(excludeGlobs)
+    .then((globs) => writeToArchive(outputPath, globs));
 }
-
-if (usedAsCli) {
-  const argList = process.argv.join('=').split('=');
-  let outputPath = null;
-  let excludeGlobs = null;
-  argList.forEach((item, index) => {
-    if (item === '--output' || item === '-o') {
-      outputPath = argList[index + 1];
-    } else if (item === '--exclude-globs') {
-      excludeGlobs = argList[index + 1].split(',');
-    }
-  });
-
-  generate({
-    outputPath: outputPath,
-    excludeGlobs: excludeGlobs,
-  });
-}
-
-exports.generate = generate;
-module.exports = exports.generate;
