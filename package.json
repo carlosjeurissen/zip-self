@@ -1,6 +1,6 @@
 {
   "name": "zip-self",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Simple package which zips the current working directory while ignoring files in gitignore",
   "keywords": [
     "zip",

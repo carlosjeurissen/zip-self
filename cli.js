@@ -19,4 +19,6 @@ generate({
   excludeGlobs,
 }).then(() => {
   console.log(outputPath + ' is ready.');
-}, console.error);
+}, console.error).then(() => {
+  process.exit(0);
+});
