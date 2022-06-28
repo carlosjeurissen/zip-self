@@ -1,13 +1,12 @@
 {
   "name": "zip-self",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Simple package which zips the current working directory while ignoring files in gitignore",
   "keywords": [
     "zip",
     "package",
     "gitignore"
   ],
-  "type": "module",
   "homepage": "https://github.com/carlosjeurissen/zip-self#readme",
   "bugs": {
     "url": "https://github.com/carlosjeurissen/zip-self/issues"
@@ -18,20 +17,18 @@
   },
   "license": "MIT",
   "author": "Carlos Jeurissen",
+  "type": "module",
   "main": "index.js",
   "bin": {
     "zip-self": "./cli.js"
   },
   "dependencies": {
-    "archiver": "~5.3.1",
-    "globby": "~13.1.2"
+    "archiver": "^5.3.1",
+    "globby": "^13.1.2"
   },
   "devDependencies": {
     "eslint": "^8.18.0",
-    "eslint-config-ccb": "^0.0.15"
-  },
-  "engines": {
-    "node": ">=8.0.0"
+    "eslint-config-ccb": "^0.0.17"
   },
   "eslintConfig": {
     "extends": "ccb",
@@ -39,5 +36,8 @@
       "es2022": true,
       "node": true
     }
+  },
+  "engines": {
+    "node": ">=12.20.0"
   }
 }
