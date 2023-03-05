@@ -4,8 +4,9 @@
 import generate from './index.js';
 
 const argList = process.argv.join('=').split('=');
-let outputPath = null;
-let excludeGlobs = null;
+let outputPath;
+let excludeGlobs;
+
 argList.forEach((item, index) => {
   if (item === '--output' || item === '-o') {
     outputPath = argList[index + 1];
@@ -15,8 +16,8 @@ argList.forEach((item, index) => {
 });
 
 generate({
-  outputPath,
   excludeGlobs,
+  outputPath,
 }).then(() => {
   console.log(outputPath + ' is ready.');
 }, console.error).then(() => {
