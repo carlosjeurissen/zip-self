@@ -1,6 +1,6 @@
 {
   "name": "zip-self",
-  "version": "0.5.9",
+  "version": "0.5.10",
   "description": "Simple package which zips the current working directory while ignoring files in gitignore",
   "keywords": [
     "zip",
@@ -23,12 +23,12 @@
     "zip-self": "./cli.js"
   },
   "dependencies": {
-    "archiver": "^5.3.1",
+    "archiver": "^6.0.1",
     "globby": "^13.2.2"
   },
   "devDependencies": {
-    "eslint": "^8.45.0",
-    "eslint-config-ccb": "^0.14.2"
+    "eslint": "^8.50.0",
+    "eslint-config-ccb": "^0.14.4"
   },
   "eslintConfig": {
     "extends": "ccb",
