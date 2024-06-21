@@ -27,7 +27,7 @@
     "globby": "^14.0.1"
   },
   "devDependencies": {
-    "eslint": "^9.4.0",
+    "eslint": "^9.5.0",
     "eslint-config-ccb": "^0.26.0"
   },
   "engines": {
