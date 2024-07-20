@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-// eslint-disable-next-line import/extensions
 import generate from './index.js';
 
 const argList = process.argv.join('=').split('=');
