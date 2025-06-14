@@ -1,4 +1,4 @@
-import { promises as fs } from 'node:fs';
+import fs from 'node:fs';
 import { globby } from 'globby';
 import archiver from 'archiver';
 
@@ -12,7 +12,7 @@ async function getVersion () {
   // 2. If not found, fall back to reading package.json.
   const packageJsonPath = './package.json';
   try {
-    const fileContent = await fs.readFile(packageJsonPath, 'utf8');
+    const fileContent = await fs.promises.readFile(packageJsonPath, 'utf8');
     const packageJson = JSON.parse(fileContent);
 
     // Explicitly check if the version key exists in the parsed JSON
