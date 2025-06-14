@@ -1,59 +1,65 @@
-import fs from 'node:fs';
+import { promises as fs } from 'node:fs';
 import { globby } from 'globby';
 import archiver from 'archiver';
 
-function getGlobsToInclude (excludeGlobs) {
-  const globs = ['**'];
-  if (Array.isArray(excludeGlobs)) {
-    excludeGlobs.forEach((item) => {
-      globs.push('!' + item);
-    });
+async function getVersion () {
+  // 1. Check the environment variable first. This is the highest priority.
+  const npmVersion = process.env.npm_package_version;
+  if (npmVersion) {
+    return npmVersion;
   }
 
-  return globby(globs, {
-    gitignore: true,
-  });
+  // 2. If not found, fall back to reading package.json.
+  const packageJsonPath = './package.json';
+  try {
+    const fileContent = await fs.readFile(packageJsonPath, 'utf8');
+    const packageJson = JSON.parse(fileContent);
+
+    // Explicitly check if the version key exists in the parsed JSON
+    if (packageJson.version) {
+      return packageJson.version;
+    }
+
+    // If the key is missing, issue a specific warning and return 'unknown'
+    console.warn('Warning: Found and read \'package.json\', but the \'version\' field is missing.');
+    return 'unknown';
+  } catch (error) {
+    // This catch block handles errors like file not found or invalid JSON
+    console.warn(`'npm_package_version' env var not set. Fallback to package.json failed: ${error.message}`);
+    return 'unknown';
+  }
 }
 
-function writeToArchive (outputPath, globs) {
+async function createArchive (outputPath, excludeGlobs = []) {
+  const globs = ['**', ...excludeGlobs.map((glob) => `!${glob}`)];
+  const filesToInclude = await globby(globs, { gitignore: true });
+
   return new Promise((resolve, reject) => {
     const outputStream = fs.createWriteStream(outputPath);
+    const archive = archiver('zip');
 
     outputStream.on('close', resolve);
+    archive.on('warning', (err) => console.warn(err));
+    archive.on('error', (err) => reject(err));
 
-    const archive = archiver('zip');
-    archive.on('error', reject);
     archive.pipe(outputStream);
 
-    globs.forEach((glob) => {
-      archive.glob(glob);
+    filesToInclude.forEach((file) => {
+      archive.file(file, { name: file });
     });
+
     archive.finalize();
   });
 }
 
-function readJsonFile (filePath) {
+export default async function generate (params) {
   try {
-    const fileText = fs.readFileSync(filePath);
-    return JSON.parse(fileText);
-  } catch (e) {
-    console.log('Couldn\'t read json file: ' + e);
-    return {};
+    const version = await getVersion();
+    const outputPath = params.outputPath.replace('{version}', version);
+
+    await createArchive(outputPath, params.excludeGlobs);
+    console.log(`Successfully created archive at: ${outputPath}`);
+  } catch (error) {
+    console.error(`Failed to generate archive: ${error}`);
   }
-}
-
-function getVersion () {
-  const version = process.env.npm_package_version;
-  if (version) return version;
-  const packageJson = readJsonFile('./package.json');
-  return packageJson.version || 'unknown';
-}
-
-export default function generate (params) {
-  const version = getVersion();
-  const outputPath = params.outputPath.replace('{version}', version);
-  const excludeGlobs = params.excludeGlobs;
-
-  return getGlobsToInclude(excludeGlobs)
-    .then((globs) => writeToArchive(outputPath, globs));
 }
